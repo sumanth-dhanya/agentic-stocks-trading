@@ -1,6 +1,7 @@
 class RepositoryException(Exception):
     """Base exception for repository-related errors."""
 
+
 # Week 2+: Metadata fetching exceptions
 class MetadataFetchingException(Exception):
     """Base exception for metadata fetching pipeline errors."""
