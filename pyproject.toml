@@ -27,6 +27,7 @@ dependencies = [
   "chromadb>=1.0.20",
   "rich>=14.1.0",
   "langchain-community>=0.3.29",
+  "python-decouple>=3.8",
 ]
 requires-python = ">= 3.10"
 
