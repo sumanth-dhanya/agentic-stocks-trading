@@ -5,5 +5,9 @@ repos:
   hooks:
     # Run the linter.
     - id: ruff-check
+      exclude: ^notebooks/.*\.ipynb$
+
     # Run the formatter.
     - id: ruff-format
+      exclude: ^notebooks/.*\.ipynb$
+
