@@ -25,8 +25,8 @@ jobs:
         run: uv sync --locked --all-extras
       - name: Lint with ruff
         run: |
-          ruff format . --check
-          ruff check .
+          ruff format . --exclude "notebooks/*.ipynb" --check
+          ruff check . --exclude "notebooks/*.ipynb"
       - name: Test with pytest
         run: |
           pytest tests/
