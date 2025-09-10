@@ -16,6 +16,16 @@ dependencies = [
   "ipykernel",
   "pip>=25.2",
   "uv>=0.8.16",
+  "langchain>=0.3.27",
+  "langgraph>=0.6.7",
+  "langchain-openai>=0.3.32",
+  "tavily-python>=0.7.11",
+  "yfinance>=0.2.65",
+  "finnhub-python>=2.4.24",
+  "stockstats>=0.6.5",
+  "beautifulsoup4>=4.13.5",
+  "chromadb>=1.0.20",
+  "rich>=14.1.0",
 ]
 requires-python = ">= 3.10"
 
