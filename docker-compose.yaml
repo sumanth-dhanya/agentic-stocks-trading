@@ -1,0 +1,19 @@
+services:
+  agent-api:
+    container_name: agentic-stocks-trading
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    networks:
+      - agentic-stocks-trading-network
+
+volumes:
+  data:
+
+networks:
+  agentic-stocks-trading-network:
+    name: agentic-stocks-trading-network
