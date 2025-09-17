@@ -127,7 +127,7 @@ class TestTradingConfig:
             "quick_think_llm": "claude-3-sonnet",
             "max_debate_rounds": 3,
             "online_tools": False,
-            "data_cache_dir": "./custom_cache"
+            "data_cache_dir": "./custom_cache",
         }
 
         config = TradingConfig.from_dict(flat_config)

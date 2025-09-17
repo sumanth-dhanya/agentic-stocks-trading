@@ -47,7 +47,7 @@ class LogConfig(BaseConfigSettings):
 
         # If there's a parent directory (not just a filename),
         # make sure it exists
-        if parent_dir != Path('.'):
+        if parent_dir != Path("."):
             os.makedirs(parent_dir, exist_ok=True)
 
         return v
@@ -55,6 +55,7 @@ class LogConfig(BaseConfigSettings):
 
 class LLMConfig(BaseConfigSettings):
     """Configuration for LLM settings."""
+
     llm_provider: str = Field("openai", description="LLM provider (e.g., openai, anthropic)")
     deep_think_llm: str = Field("gpt-4o", description="Powerful model for complex reasoning")
     quick_think_llm: str = Field("gpt-4o-mini", description="Fast, cheaper model for data processing")
@@ -63,6 +64,7 @@ class LLMConfig(BaseConfigSettings):
 
 class DebateConfig(BaseConfigSettings):
     """Configuration for debate and discussion settings."""
+
     max_debate_rounds: int = Field(2, description="Number of rounds for Bull vs. Bear debate", ge=1)
     max_risk_discuss_rounds: int = Field(1, description="Number of rounds for risk team debate", ge=1)
     max_recur_limit: int = Field(100, description="Maximum recursion limit", ge=1)
@@ -70,6 +72,7 @@ class DebateConfig(BaseConfigSettings):
 
 class ToolConfig(BaseConfigSettings):
     """Configuration for tool settings."""
+
     online_tools: bool = Field(True, description="Use live APIs instead of cached data")
     data_cache_dir: str = Field(f"{PROJECT_ROOT}/data/data_cache", description="Directory for caching online data")
 
@@ -111,7 +114,7 @@ class ToolConfig(BaseConfigSettings):
             "tools": {
                 "online_tools": config_dict.get("online_tools", True),
                 "data_cache_dir": config_dict.get("data_cache_dir", f"{PROJECT_ROOT}/data/data_cache"),
-            }
+            },
         }
 
         # Filter out None values to use class defaults
@@ -124,6 +127,7 @@ class ToolConfig(BaseConfigSettings):
 
 class TradingConfig(BaseConfigSettings):
     """Main trading configuration."""
+
     results_dir: str = Field(f"{PROJECT_ROOT}/data/results", description="Directory for storing results")
     llm: LLMConfig = Field(default_factory=LLMConfig, description="LLM configuration settings")
     debate: DebateConfig = Field(default_factory=DebateConfig, description="Debate configuration settings")

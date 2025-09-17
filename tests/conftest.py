@@ -9,10 +9,11 @@ import sys
 from unittest.mock import MagicMock
 
 # Create mocks for the logging functions
-sys.modules['src.agentic_stocks_trading.infrastructure.monitoring.logger_factory'] = MagicMock()
-sys.modules['src.agentic_stocks_trading.infrastructure.monitoring.logger_factory'].get_logger = MagicMock(
-    return_value=MagicMock())
-sys.modules['src.agentic_stocks_trading.infrastructure.monitoring.logger_factory'].setup_logging = MagicMock()
+sys.modules["src.agentic_stocks_trading.infrastructure.monitoring.logger_factory"] = MagicMock()
+sys.modules["src.agentic_stocks_trading.infrastructure.monitoring.logger_factory"].get_logger = MagicMock(
+    return_value=MagicMock()
+)
+sys.modules["src.agentic_stocks_trading.infrastructure.monitoring.logger_factory"].setup_logging = MagicMock()
 
 # Now import your modules
 from src.agentic_stocks_trading.config import Settings, TradingConfig
@@ -38,5 +39,5 @@ def mock_trading_config_dict() -> Dict[str, Any]:
         "max_risk_discuss_rounds": 2,
         "max_recur_limit": 50,
         "online_tools": False,
-        "data_cache_dir": "./test_cache"
+        "data_cache_dir": "./test_cache",
     }

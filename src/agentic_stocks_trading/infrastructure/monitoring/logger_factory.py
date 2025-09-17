@@ -12,10 +12,10 @@ def setup_logging(config=None):
     )
     format_file = (
         "{{"  # Double braces for literal '{'
-        "\"time\":\"{time:YYYY-MM-DDTHH:mm:ss}\","
-        "\"level\":\"{level}\","
-        "\"module\":\"{module}\","
-        "\"message\":\"{message}\""
+        '"time":"{time:YYYY-MM-DDTHH:mm:ss}",'
+        '"level":"{level}",'
+        '"module":"{module}",'
+        '"message":"{message}"'
         "}}"  # Double braces for literal '}'
     )
 
@@ -37,8 +37,9 @@ def setup_logging(config=None):
     if log_to_console:
         logger.add(sys.stderr, level=log_level.upper(), format=format_console, enqueue=True)
     if log_to_file:
-        logger.add(log_file, level=log_level.upper(), format=format_file,
-                   enqueue=True, rotation="1 week", serialize=True)
+        logger.add(
+            log_file, level=log_level.upper(), format=format_file, enqueue=True, rotation="1 week", serialize=True
+        )
     logging.basicConfig(handlers=[InterceptHandler()], level=0, force=True)
     for mod in intercept_modules:
         logging.getLogger(mod).handlers = [InterceptHandler()]
@@ -54,11 +55,13 @@ def get_logger(name=None):
     else:
         # Try to get the caller's module name
         import inspect
+
         frame = inspect.currentframe().f_back
-        module_name = frame.f_globals['__name__']
-        if module_name == '__main__':
+        module_name = frame.f_globals["__name__"]
+        if module_name == "__main__":
             # Try to get the actual filename if running as main
             import os
-            module_name = os.path.basename(frame.f_globals['__file__']).replace('.py', '')
+
+            module_name = os.path.basename(frame.f_globals["__file__"]).replace(".py", "")
 
         return logger.bind(module=module_name)
