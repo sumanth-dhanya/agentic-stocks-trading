@@ -1,12 +1,11 @@
 # tests/conftest.py
-import pytest
-import os
-from pathlib import Path
-from typing import Dict, Any
 
 # Mock the logger functions to avoid the import error
 import sys
+from typing import Any
 from unittest.mock import MagicMock
+
+import pytest
 
 # Create mocks for the logging functions
 sys.modules["src.agentic_stocks_trading.infrastructure.monitoring.logger_factory"] = MagicMock()
@@ -16,7 +15,6 @@ sys.modules["src.agentic_stocks_trading.infrastructure.monitoring.logger_factory
 sys.modules["src.agentic_stocks_trading.infrastructure.monitoring.logger_factory"].setup_logging = MagicMock()
 
 # Now import your modules
-from src.agentic_stocks_trading.config import Settings, TradingConfig
 
 
 @pytest.fixture
@@ -28,7 +26,7 @@ def temp_env_file(tmp_path):
 
 
 @pytest.fixture
-def mock_trading_config_dict() -> Dict[str, Any]:
+def mock_trading_config_dict() -> dict[str, Any]:
     """Return a sample trading config dictionary for testing."""
     return {
         "results_dir": "./test_results",

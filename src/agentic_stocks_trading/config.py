@@ -1,9 +1,10 @@
-from pathlib import Path
-from typing import Literal, Any, Dict
 import os
+from pathlib import Path
+from typing import Any, Literal, dict
 
 from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
 from src.agentic_stocks_trading.infrastructure.monitoring.logger_factory import get_logger, setup_logging
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent
@@ -31,7 +32,7 @@ class LogConfig(BaseConfigSettings):
     @field_validator("intercept_modules", mode="before")
     @classmethod
     def parse_intercept_modules(cls, value: Any) -> list[str]:
-        if not isinstance(value, (str, list)):
+        if not isinstance(value, 'str | list'):
             raise ValueError(f"intercept_modules must be a string or list, got {type(value).__name__}")
         if isinstance(value, list):
             if not all(isinstance(item, str) for item in value):
@@ -85,7 +86,7 @@ class ToolConfig(BaseConfigSettings):
         return v
 
     @classmethod
-    def from_dict(cls, config_dict: Dict[str, Any]) -> "TradingConfig":
+    def from_dict(cls, config_dict: dict[str, Any]) -> "TradingConfig":
         """Create a TradingConfig instance from a flat dictionary.
 
         This method transforms a flat dictionary with keys like 'llm_provider'

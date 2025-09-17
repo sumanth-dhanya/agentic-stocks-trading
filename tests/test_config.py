@@ -1,16 +1,16 @@
 import os
-import pytest
 from pathlib import Path
 from unittest.mock import patch
 
+import pytest
+
 from src.agentic_stocks_trading.config import (
-    get_settings,
-    Settings,
-    LogConfig,
-    LLMConfig,
     DebateConfig,
+    LLMConfig,
+    LogConfig,
     ToolConfig,
     TradingConfig,
+    get_settings,
 )
 
 
@@ -47,9 +47,10 @@ class TestLogConfig:
         assert not log_dir.exists()
 
         config = LogConfig(log_file=log_file)
-
         # Directory should be created
         assert log_dir.exists()
+        # Also test the config object itself
+        assert config.log_file == log_file
         # File should not be created
         assert not Path(log_file).exists()
 
@@ -94,6 +95,7 @@ class TestToolConfig:
         assert not Path(cache_dir).exists()
 
         config = ToolConfig(data_cache_dir=cache_dir)
+        assert config.data_cache_dir == cache_dir
 
         # Directory should be created
         assert Path(cache_dir).exists()
@@ -114,6 +116,7 @@ class TestTradingConfig:
         assert not Path(results_dir).exists()
 
         config = TradingConfig(results_dir=results_dir)
+        assert config.results_dir == results_dir
 
         # Directory should be created
         assert Path(results_dir).exists()

@@ -1,6 +1,9 @@
+import logging
+import sys
+
 from loguru import logger
+
 from .intercept_handler import InterceptHandler
-import sys, logging
 
 
 def setup_logging(config=None):
