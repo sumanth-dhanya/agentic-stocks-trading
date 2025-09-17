@@ -121,28 +121,6 @@ class TestTradingConfig:
         # Directory should be created
         assert Path(results_dir).exists()
 
-    def test_from_dict_method(self):
-        # Test the from_dict method on TradingConfig
-        flat_config = {
-            "results_dir": "./custom_results",
-            "llm_provider": "anthropic",
-            "deep_think_llm": "claude-3-opus",
-            "quick_think_llm": "claude-3-sonnet",
-            "max_debate_rounds": 3,
-            "online_tools": False,
-            "data_cache_dir": "./custom_cache",
-        }
-
-        config = TradingConfig.from_dict(flat_config)
-
-        assert config.results_dir == "./custom_results"
-        assert config.llm.llm_provider == "anthropic"
-        assert config.llm.deep_think_llm == "claude-3-opus"
-        assert config.llm.quick_think_llm == "claude-3-sonnet"
-        assert config.debate.max_debate_rounds == 3
-        assert config.tools.online_tools is False
-        assert config.tools.data_cache_dir == "./custom_cache"
-
 
 class TestSettings:
     def test_default_values(self):

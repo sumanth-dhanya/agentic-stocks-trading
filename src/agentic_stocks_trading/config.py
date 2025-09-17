@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from typing import Any, Literal, dict
+from typing import Any, Literal
 
 from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -32,7 +32,7 @@ class LogConfig(BaseConfigSettings):
     @field_validator("intercept_modules", mode="before")
     @classmethod
     def parse_intercept_modules(cls, value: Any) -> list[str]:
-        if not isinstance(value, "str | list"):
+        if not isinstance(value, str | list):
             raise ValueError(f"intercept_modules must be a string or list, got {type(value).__name__}")
         if isinstance(value, list):
             if not all(isinstance(item, str) for item in value):
