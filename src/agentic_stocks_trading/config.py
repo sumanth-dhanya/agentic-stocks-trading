@@ -26,7 +26,7 @@ class LogConfig(BaseConfigSettings):
     log_level: str = Field("INFO", description="Minimum log level")
     log_to_console: bool = Field(True, description="Enable stderr logging")
     log_to_file: bool = Field(True, description="Enable file logging")
-    log_file: str = Field("application.log", description="Path for log output")
+    log_file: str = Field("logs/service.log", description="Path for log output")
     intercept_modules: list[str] | str = Field(default_factory=lambda: ["uvicorn", "sqlalchemy"])
 
     @field_validator("intercept_modules", mode="before")
