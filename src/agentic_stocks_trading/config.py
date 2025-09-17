@@ -149,7 +149,7 @@ class Settings(BaseConfigSettings):
     environment: Literal["development", "staging", "production"] = "development"
     service_name: str = "agentic-stocks-trading"
 
-    OPENAI_API_KEY: str = ""
+    OPENAI_API_KEY: str = "Enter your OpenAI API key"
     FINNHUB_API_KEY: str = ""
     TAVILY_API_KEY: str = ""
     LANGSMITH_API_KEY: str = ""
