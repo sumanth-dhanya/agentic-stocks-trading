@@ -23,7 +23,7 @@ class BaseConfigSettings(BaseSettings):
 
 
 class LogConfig(BaseConfigSettings):
-    log_level: str = Field("DEBUG", description="Minimum log level")
+    log_level: str = Field("INFO", description="Minimum log level")
     log_to_console: bool = Field(True, description="Enable stderr logging")
     log_to_file: bool = Field(True, description="Enable file logging")
     log_file: str = Field("application.log", description="Path for log output")
