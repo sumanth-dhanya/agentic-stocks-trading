@@ -62,4 +62,3 @@ def get_logger(name=None):
             module_name = os.path.basename(frame.f_globals['__file__']).replace('.py', '')
 
         return logger.bind(module=module_name)
-

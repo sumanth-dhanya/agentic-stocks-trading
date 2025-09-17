@@ -122,7 +122,6 @@ class ToolConfig(BaseConfigSettings):
         return cls(**nested_config)
 
 
-
 class TradingConfig(BaseConfigSettings):
     """Main trading configuration."""
     results_dir: str = Field(f"{PROJECT_ROOT}/data/results", description="Directory for storing results")
@@ -162,7 +161,6 @@ def get_settings() -> Settings:
 
 if __name__ == "__main__":
     settings = get_settings()
-
 
     # Setup logging system
     setup_logging(settings.log)

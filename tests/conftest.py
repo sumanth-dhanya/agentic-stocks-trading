@@ -10,11 +10,13 @@ from unittest.mock import MagicMock
 
 # Create mocks for the logging functions
 sys.modules['src.agentic_stocks_trading.infrastructure.monitoring.logger_factory'] = MagicMock()
-sys.modules['src.agentic_stocks_trading.infrastructure.monitoring.logger_factory'].get_logger = MagicMock(return_value=MagicMock())
+sys.modules['src.agentic_stocks_trading.infrastructure.monitoring.logger_factory'].get_logger = MagicMock(
+    return_value=MagicMock())
 sys.modules['src.agentic_stocks_trading.infrastructure.monitoring.logger_factory'].setup_logging = MagicMock()
 
 # Now import your modules
 from src.agentic_stocks_trading.config import Settings, TradingConfig
+
 
 @pytest.fixture
 def temp_env_file(tmp_path):
@@ -22,6 +24,7 @@ def temp_env_file(tmp_path):
     env_file = tmp_path / ".env"
     env_file.write_text("LOG_LEVEL=INFO\nDEBUG=true\n")
     return env_file
+
 
 @pytest.fixture
 def mock_trading_config_dict() -> Dict[str, Any]:
