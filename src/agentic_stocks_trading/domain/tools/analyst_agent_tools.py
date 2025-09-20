@@ -1,7 +1,7 @@
+from typing import Annotated
+
 import yfinance as yf
 from langchain_core.tools import tool
-from typing import Annotated, Sequence, List
-
 from stockstats import wrap as stockstats_wrap
 
 
