@@ -8,18 +8,39 @@ from .intercept_handler import InterceptHandler
 
 def setup_logging(config=None):
     logger.remove()
+
+    # Patch records to normalize fields used by the formatter
+    def _patch_record(record):
+        extra = record["extra"]
+
+        # Ensure we always have a 'module' label (prefer bound value, otherwise derive)
+        if "module" not in extra or not extra["module"] or extra["module"] == "unknown":
+            derived = record.get("name") or record.get("module") or "unknown"
+            extra["module"] = derived
+
+        # Provide a normalized function label: use "__main__" for top-level calls
+        fn = record.get("function")
+        extra["function_label"] = "__main__" if fn == "<module>" else fn
+
+    logger.configure(patcher=_patch_record, extra={"module": "unknown"})
+
     format_console = (
         "<green>{time:YYYY-MM-DD HH:mm:ss}</green> | "
-        "<cyan>{module}</cyan>:<cyan>{function}</cyan> | "
-        "<level>{level}</level> | <level>{message}</level>"
+        "<level>{level: <8}</level> | "
+        "<cyan>{extra[module]}</cyan>:<cyan>{extra[function_label]}</cyan> |"
+        "[{file.name}:{line}] | "
+        "<level>{message}</level>"
     )
     format_file = (
-        "{{"  # Double braces for literal '{'
+        "{{"
         '"time":"{time:YYYY-MM-DDTHH:mm:ss}",'
         '"level":"{level}",'
-        '"module":"{module}",'
+        '"module":"{extra[module]}",'
+        '"function":"{extra[function_label]}",'
+        '"file":"{file.name}",'
+        '"line":{line},'
         '"message":"{message}"'
-        "}}"  # Double braces for literal '}'
+        "}}"
     )
 
     # Default values if config is not provided
@@ -53,8 +74,8 @@ def setup_logging(config=None):
 def get_logger(name=None):
     """Get a logger instance, optionally with a specific name."""
     if name:
-        # Use the provided name
-        return logger.bind(name=name)
+        # Use the provided name as the module label in logs
+        return logger.bind(module=name)
     else:
         # Try to get the caller's module name
         import inspect

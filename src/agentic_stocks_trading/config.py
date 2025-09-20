@@ -5,8 +5,6 @@ from typing import Any, Literal
 from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from src.agentic_stocks_trading.infrastructure.monitoring.logger_factory import get_logger, setup_logging
-
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 ENV_FILE_PATH = PROJECT_ROOT / ".env"
 
@@ -26,7 +24,7 @@ class LogConfig(BaseConfigSettings):
     log_level: str = Field("INFO", description="Minimum log level")
     log_to_console: bool = Field(True, description="Enable stderr logging")
     log_to_file: bool = Field(True, description="Enable file logging")
-    log_file: str = Field("logs/service.log", description="Path for log output")
+    log_file: str = Field("src/agentic_stocks_trading/logs/service.log", description="Path for log output")
     intercept_modules: list[str] | str = Field(default_factory=lambda: ["uvicorn", "sqlalchemy"])
 
     @field_validator("intercept_modules", mode="before")
@@ -43,15 +41,15 @@ class LogConfig(BaseConfigSettings):
     @field_validator("log_file")
     @classmethod
     def validate_log_dir(cls, v: str) -> str:
-        # Get the parent directory of the log file
-        parent_dir = Path(v).parent
+        p = Path(v)
+        if not p.is_absolute():
+            p = PROJECT_ROOT / p
 
-        # If there's a parent directory (not just a filename),
-        # make sure it exists
+        parent_dir = p.parent
         if parent_dir != Path("."):
             os.makedirs(parent_dir, exist_ok=True)
 
-        return v
+        return str(p)
 
 
 class LLMConfig(BaseConfigSettings):
@@ -162,16 +160,3 @@ class Settings(BaseConfigSettings):
 
 def get_settings() -> Settings:
     return Settings()
-
-
-if __name__ == "__main__":
-    settings = get_settings()
-
-    # Setup logging system
-    setup_logging(settings.log)
-
-    # Get a named logger for this module
-    logger = get_logger()
-
-    logger.info(f"Env file path: {ENV_FILE_PATH / '.env'}")
-    logger.info(settings.model_dump())

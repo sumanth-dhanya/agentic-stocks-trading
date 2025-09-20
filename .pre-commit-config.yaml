@@ -1,13 +1,23 @@
+minimum_pre_commit_version: "3.5.0"
+
 repos:
-- repo: https://github.com/astral-sh/ruff-pre-commit
-  # Ruff version.
-  rev: v0.12.11
-  hooks:
-    # Run the linter.
-    - id: ruff-check
-      exclude: ^notebooks/.*\.ipynb$
+  - repo: local
+    hooks:
+      - id: ruff-lint
+        name: ruff (lint via uv)
+        description: Run ruff check with fixes
+        entry: uv run ruff check --force-exclude --fix --ignore E721,E741
+        language: system
+        types_or: [python, pyi]
+        require_serial: true
+        files: ^(src/|tests/|setup.py)
+        exclude: ^notebooks/.*\.ipynb$
 
-    # Run the formatter.
-    - id: ruff-format
-      exclude: ^notebooks/.*\.ipynb$
-
+      - id: ruff-format
+        name: ruff (format via uv)
+        description: Run ruff format
+        entry: uv run ruff format --force-exclude --line-length 100
+        language: system
+        types_or: [python, pyi]
+        require_serial: true
+        exclude: ^notebooks/.*\.ipynb$
