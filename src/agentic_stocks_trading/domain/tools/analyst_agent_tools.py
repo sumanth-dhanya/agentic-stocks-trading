@@ -1,8 +1,10 @@
 from typing import Annotated
-
+from agentic_stocks_trading import logger
+from langchain_community.tools.tavily_search import TavilySearchResults
 import yfinance as yf
 from langchain_core.tools import tool
 from stockstats import wrap as stockstats_wrap
+from src.agentic_stocks_trading.config import get_settings
 
 
 @tool
@@ -77,8 +79,23 @@ def get_macroeconomic_news(trade_date: str) -> str:
     query = f"macroeconomic news and market trends affecting the stock market on {trade_date}"
     return tavily_tool.invoke({"query": query})
 
-
-from langchain_community.tools.tavily_search import TavilySearchResults
-
 # Initialize the Tavily search tool once. We can reuse this instance for multiple specialized tools.
 tavily_tool = TavilySearchResults(max_results=3)
+
+
+# The Toolkit class aggregates all defined tools into a single, convenient object.
+class Toolkit:
+    def __init__(self, config):
+        self.config = config
+        self.get_yfinance_data = get_yfinance_data
+        self.get_technical_indicators = get_technical_indicators
+        self.get_finnhub_news = get_finnhub_news
+        self.get_social_media_sentiment = get_social_media_sentiment
+        self.get_fundamental_analysis = get_fundamental_analysis
+        self.get_macroeconomic_news = get_macroeconomic_news
+
+# Instantiate the Toolkit, making all tools available through this single object.
+
+config = get_settings()
+toolkit = Toolkit(config)
+logger.info(f"Toolkit class defined and instantiated with live data tools.")

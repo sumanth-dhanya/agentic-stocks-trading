@@ -150,3 +150,7 @@ class TestSettings:
         settings = get_settings()
         assert settings.trading.llm.llm_provider == "anthropic"
         assert settings.trading.debate.max_debate_rounds == 3
+
+
+def test_settings():
+    assert False
