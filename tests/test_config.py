@@ -22,6 +22,7 @@ class TestLogConfig:
         assert config.log_to_file is True
         # Convert to Path and get relative path
         from pathlib import Path
+
         log_path = Path(config.log_file)
         if log_path.is_absolute():
             # Get relative path from project root
@@ -164,7 +165,7 @@ class TestSettings:
 def test_settings():
     settings = get_settings()
     assert settings is not None
-    assert hasattr(settings, 'app_version')
-    assert hasattr(settings, 'log')
-    assert hasattr(settings, 'trading')
+    assert hasattr(settings, "app_version")
+    assert hasattr(settings, "log")
+    assert hasattr(settings, "trading")
     assert settings.service_name == "agentic-stocks-trading"
