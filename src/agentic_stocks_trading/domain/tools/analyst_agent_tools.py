@@ -1,10 +1,13 @@
 import os
 from typing import Annotated
-from agentic_stocks_trading import logger
-from langchain_community.tools.tavily_search import TavilySearchResults
+
+import finnhub
 import yfinance as yf
+from langchain_community.tools.tavily_search import TavilySearchResults
 from langchain_core.tools import tool
 from stockstats import wrap as stockstats_wrap
+
+from agentic_stocks_trading import logger
 from src.agentic_stocks_trading.config import get_settings
 
 
@@ -41,9 +44,6 @@ def get_technical_indicators(
         return indicators.tail().to_csv()
     except Exception as e:
         return f"Error calculating stockstats indicators: {e}"
-
-
-import finnhub
 
 
 @tool
@@ -101,4 +101,4 @@ class Toolkit:
 
 config = get_settings()
 toolkit = Toolkit(config)
-logger.info(f"Toolkit class defined and instantiated with live data tools.")
+logger.info("Toolkit class defined and instantiated with live data tools.")

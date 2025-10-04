@@ -20,7 +20,16 @@ class TestLogConfig:
         assert config.log_level == "INFO"
         assert config.log_to_console is True
         assert config.log_to_file is True
-        assert config.log_file == "logs/service.log"
+        # Convert to Path and get relative path
+        from pathlib import Path
+        log_path = Path(config.log_file)
+        if log_path.is_absolute():
+            # Get relative path from project root
+            project_root = Path(__file__).parent.parent
+            relative_path = log_path.relative_to(project_root)
+            assert str(relative_path) == "logs/service.log"
+        else:
+            assert config.log_file == "logs/service.log"
         assert config.intercept_modules == ["uvicorn", "sqlalchemy"]
 
     def test_intercept_modules_validator_with_string(self):
@@ -153,4 +162,9 @@ class TestSettings:
 
 
 def test_settings():
-    assert False
+    settings = get_settings()
+    assert settings is not None
+    assert hasattr(settings, 'app_version')
+    assert hasattr(settings, 'log')
+    assert hasattr(settings, 'trading')
+    assert settings.service_name == "agentic-stocks-trading"

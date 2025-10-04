@@ -1,5 +1,5 @@
-from typing_extensions import TypedDict
 from langgraph.graph import MessagesState
+from typing_extensions import TypedDict
 
 
 # State for the researcher team's debate, acting as a dedicated scratchpad.
