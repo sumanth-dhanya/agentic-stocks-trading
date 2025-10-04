@@ -1,3 +1,4 @@
+import os
 from typing import Annotated
 from agentic_stocks_trading import logger
 from langchain_community.tools.tavily_search import TavilySearchResults
@@ -79,6 +80,7 @@ def get_macroeconomic_news(trade_date: str) -> str:
     query = f"macroeconomic news and market trends affecting the stock market on {trade_date}"
     return tavily_tool.invoke({"query": query})
 
+
 # Initialize the Tavily search tool once. We can reuse this instance for multiple specialized tools.
 tavily_tool = TavilySearchResults(max_results=3)
 
@@ -93,6 +95,7 @@ class Toolkit:
         self.get_social_media_sentiment = get_social_media_sentiment
         self.get_fundamental_analysis = get_fundamental_analysis
         self.get_macroeconomic_news = get_macroeconomic_news
+
 
 # Instantiate the Toolkit, making all tools available through this single object.
 
