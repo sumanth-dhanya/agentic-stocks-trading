@@ -47,6 +47,9 @@ class TestFinancialSituationMemory:
     def test_add_and_retrieve_situations(self, mock_embedding, memory_instance):
         mock_embedding.return_value = [0.1, 0.2, 0.3]  # Mock embedding
 
+        # Mock the count method to return 0 for initial state
+        memory_instance.situation_collection.count.return_value = 0
+
         situations = [("Market is bullish", "Buy stocks"), ("Market is bearish", "Sell stocks")]
 
         memory_instance.add_situations(situations)
