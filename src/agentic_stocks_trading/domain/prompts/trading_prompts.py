@@ -4,7 +4,7 @@ from typing import Any
 from uuid import UUID, uuid4
 
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from pydantic import BaseModel, Field, root_validator, validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 
 class PromptStatus(str, Enum):
@@ -52,7 +52,7 @@ class PromptVariable(BaseModel):
     default_value: Any | None = Field(default=None, description="Default value if not provided")
     validation_rules: dict[str, Any] | None = Field(default=None, description="Validation rules for the variable")
 
-    @validator("name")
+    @field_validator("name")
     def validate_variable_name(cls, v):
         if not v.replace("_", "").isalnum():
             raise ValueError("Variable name must be alphanumeric (underscores allowed)")
@@ -124,7 +124,7 @@ class TradingPromptVersion(BaseModel):
     test_group: str | None = Field(default=None, description="Test group identifier for A/B testing")
     rollout_percentage: float = Field(default=100.0, description="Percentage of traffic using this version")
 
-    @validator("version")
+    @field_validator("version")
     def validate_version_format(cls, v):
         """Validate semantic versioning format"""
         import re
@@ -133,17 +133,29 @@ class TradingPromptVersion(BaseModel):
             raise ValueError("Version must follow semantic versioning (e.g., 1.0.0, 2.1.3-beta)")
         return v
 
-    @root_validator
-    def validate_content(cls, values):
-        """Ensure at least one content field is provided"""
-        content = values.get("content")
-        system_message = values.get("system_message")
-        langchain_messages = values.get("langchain_messages")
+    @field_validator("rollout_percentage")
+    @classmethod
+    def validate_rollout_percentage(cls, v):
+        if not 0 <= v <= 100:
+            raise ValueError("Rollout percentage must be between 0 and 100")
+        return v
 
-        if not any([content, system_message, langchain_messages]):
+    @model_validator(mode="after")
+    def validate_content_and_status(self):
+        """Ensure at least one content field is provided and validate status transitions"""
+        # Validate content
+        if not any([self.content, self.system_message, self.langchain_messages]):
             raise ValueError("At least one of content, system_message, or langchain_messages must be provided")
 
-        return values
+        # Validate status transitions
+        if self.status == PromptStatus.ACTIVE and not self.approved_by:
+            raise ValueError("Active prompts must be approved")
+
+        # Auto-set approved_at if approved_by is set but approved_at is not
+        if self.approved_by and not self.approved_at:
+            self.approved_at = datetime.now(timezone.utc)
+
+        return self
 
     def create_langchain_prompt(self, tools: list[Any] | None = None) -> ChatPromptTemplate:
         """Create a LangChain ChatPromptTemplate from this prompt version"""
@@ -257,7 +269,10 @@ def create_trading_prompt_registry():
     market_analyst_prompt = TradingPromptVersion(
         prompt_name="market_analyst",
         version="1.0.0",
-        system_message="You are a trading assistant specialized in analyzing financial markets. Your role is to select the most relevant technical indicators to analyze a stock's price action, momentum, and volatility. You must use your tools to get historical data and then generate a report with your findings, including a summary table.",
+        system_message="""You are a trading assistant specialized in analyzing financial markets. Your role is to
+        select the most relevant technical indicators to analyze a stock's price action, momentum, and volatility.
+        You must use your tools to get historical data and then generate a report with your findings,
+        including a summary table.""",
         prompt_type=PromptType.LANGCHAIN_CHAT,
         trading_role=TradingRole.MARKET_ANALYST,
         tools_required=["get_yfinance_data", "get_technical_indicators"],
@@ -282,7 +297,10 @@ def create_trading_prompt_registry():
     social_analyst_prompt = TradingPromptVersion(
         prompt_name="social_analyst",
         version="1.0.0",
-        system_message="You are a social media analyst. Your job is to analyze social media posts and public sentiment for a specific company over the past week. Use your tools to find relevant discussions and write a comprehensive report detailing your analysis, insights, and implications for traders, including a summary table.",
+        system_message="""You are a social media analyst. Your job is to analyze social media posts and public
+        sentiment for a specific company over the past week. Use your tools to find relevant discussions and write a
+        comprehensive report detailing your analysis, insights, and implications for traders,
+        including a summary table.""",
         prompt_type=PromptType.LANGCHAIN_CHAT,
         trading_role=TradingRole.SOCIAL_ANALYST,
         tools_required=["get_social_media_sentiment"],
@@ -307,7 +325,9 @@ def create_trading_prompt_registry():
     news_analyst_prompt = TradingPromptVersion(
         prompt_name="news_analyst",
         version="1.0.0",
-        system_message="You are a news researcher analyzing recent news and trends over the past week. Write a comprehensive report on the current state of the world relevant for trading and macroeconomics. Use your tools to be comprehensive and provide detailed analysis, including a summary table.",
+        system_message="""You are a news researcher analyzing recent news and trends over the past week.
+         Write a comprehensive report on the current state of the world relevant for trading and macroeconomics.
+         Use your tools to be comprehensive and provide detailed analysis, including a summary table.""",
         prompt_type=PromptType.LANGCHAIN_CHAT,
         trading_role=TradingRole.NEWS_ANALYST,
         tools_required=["get_finnhub_news", "get_macroeconomic_news"],
@@ -332,7 +352,9 @@ def create_trading_prompt_registry():
     fundamentals_analyst_prompt = TradingPromptVersion(
         prompt_name="fundamentals_analyst",
         version="1.0.0",
-        system_message="You are a researcher analyzing fundamental information about a company. Write a comprehensive report on the company's financials, insider sentiment, and transactions to gain a full view of its fundamental health, including a summary table.",
+        system_message="""You are a researcher analyzing fundamental information about a company.
+         Write a comprehensive report on the company's financials, insider sentiment, and transactions to gain a
+          full view of its fundamental health, including a summary table.""",
         prompt_type=PromptType.LANGCHAIN_CHAT,
         trading_role=TradingRole.FUNDAMENTALS_ANALYST,
         tools_required=["get_fundamental_analysis"],
@@ -357,7 +379,10 @@ def create_trading_prompt_registry():
     risk_analyst_prompt = TradingPromptVersion(
         prompt_name="risk_analyst",
         version="1.0.0",
-        system_message="You are a risk management analyst specializing in evaluating portfolio risk, market volatility, and position sizing. Analyze the risk metrics, correlation patterns, and potential drawdowns. Provide risk-adjusted recommendations and appropriate position sizing strategies, including a comprehensive risk assessment table.",
+        system_message="""You are a risk management analyst specializing in evaluating portfolio risk,
+        market volatility, and position sizing. Analyze the risk metrics, correlation patterns, and
+        potential drawdowns. Provide risk-adjusted recommendations and appropriate position sizing strategies,
+        including a comprehensive risk assessment table.""",
         prompt_type=PromptType.LANGCHAIN_CHAT,
         trading_role=TradingRole.RISK_ANALYST,
         tools_required=["get_risk_metrics", "get_correlation_analysis", "get_volatility_data"],
@@ -384,7 +409,10 @@ def create_trading_prompt_registry():
     quant_analyst_prompt = TradingPromptVersion(
         prompt_name="quantitative_analyst",
         version="1.0.0",
-        system_message="You are a quantitative analyst focusing on statistical analysis, backtesting, and algorithmic trading strategies. Analyze historical patterns, statistical relationships, and develop quantitative models. Provide backtested results, statistical significance tests, and model performance metrics in a detailed analytical report.",
+        system_message="""You are a quantitative analyst focusing on statistical analysis, backtesting, and
+        algorithmic trading strategies. Analyze historical patterns, statistical relationships, and develop
+        quantitative models. Provide backtested results, statistical significance tests, and model performance
+        metrics in a detailed analytical report.""",
         prompt_type=PromptType.LANGCHAIN_CHAT,
         trading_role=TradingRole.QUANTITATIVE_ANALYST,
         tools_required=["get_historical_data", "run_backtest", "calculate_statistics", "get_factor_analysis"],
@@ -411,7 +439,10 @@ def create_trading_prompt_registry():
     portfolio_manager_prompt = TradingPromptVersion(
         prompt_name="portfolio_manager",
         version="1.0.0",
-        system_message="You are a portfolio manager responsible for overall portfolio construction, asset allocation, and investment decisions. Synthesize information from various analysts to make informed portfolio decisions. Focus on diversification, risk-return optimization, and strategic asset allocation. Provide specific portfolio recommendations with rationale.",
+        system_message="""You are a portfolio manager responsible for overall portfolio construction, asset
+        allocation, and investment decisions. Synthesize information from various analysts to make informed
+        portfolio decisions. Focus on diversification, risk-return optimization, and strategic asset allocation.
+        Provide specific portfolio recommendations with rationale.""",
         prompt_type=PromptType.LANGCHAIN_CHAT,
         trading_role=TradingRole.PORTFOLIO_MANAGER,
         tools_required=["get_portfolio_analytics", "get_asset_allocation", "get_performance_attribution"],
