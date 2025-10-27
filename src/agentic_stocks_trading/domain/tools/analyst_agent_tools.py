@@ -81,10 +81,6 @@ def get_macroeconomic_news(trade_date: str) -> str:
     return tavily_tool.invoke({"query": query})
 
 
-# Initialize the Tavily search tool once. We can reuse this instance for multiple specialized tools.
-tavily_tool = TavilySearchResults(max_results=3)
-
-
 # The Toolkit class aggregates all defined tools into a single, convenient object.
 class Toolkit:
     def __init__(self, config):
@@ -101,4 +97,6 @@ class Toolkit:
 
 config = get_settings()
 toolkit = Toolkit(config)
+# Initialize the Tavily search tool once. We can reuse this instance for multiple specialized tools.
+tavily_tool = TavilySearchResults(max_results=3, tavily_api_key=config.TAVILY_API_KEY)
 logger.info("Toolkit class defined and instantiated with live data tools.")

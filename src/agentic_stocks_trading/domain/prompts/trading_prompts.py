@@ -280,6 +280,7 @@ def create_trading_prompt_registry():
         created_by="system",
         status=PromptStatus.ACTIVE,
         description="Market analysis prompt focusing on technical indicators",
+        approved_by="Sumanth",
         variables=[
             PromptVariable(name="current_date", type="str", description="Current trading date"),
             PromptVariable(name="ticker", type="str", description="Stock ticker symbol"),
@@ -308,6 +309,7 @@ def create_trading_prompt_registry():
         created_by="system",
         status=PromptStatus.ACTIVE,
         description="Social media sentiment analysis prompt",
+        approved_by="Sumanth",
         variables=[
             PromptVariable(name="current_date", type="str", description="Current trading date"),
             PromptVariable(name="ticker", type="str", description="Stock ticker symbol"),
@@ -335,6 +337,7 @@ def create_trading_prompt_registry():
         created_by="system",
         status=PromptStatus.ACTIVE,
         description="News and macroeconomic analysis prompt",
+        approved_by="Sumanth",
         variables=[
             PromptVariable(name="current_date", type="str", description="Current trading date"),
             PromptVariable(name="ticker", type="str", description="Stock ticker symbol"),
@@ -362,6 +365,7 @@ def create_trading_prompt_registry():
         created_by="system",
         status=PromptStatus.ACTIVE,
         description="Fundamental analysis prompt for company financials",
+        approved_by="Sumanth",
         variables=[
             PromptVariable(name="current_date", type="str", description="Current trading date"),
             PromptVariable(name="ticker", type="str", description="Stock ticker symbol"),
@@ -390,6 +394,7 @@ def create_trading_prompt_registry():
         created_by="system",
         status=PromptStatus.ACTIVE,
         description="Risk analysis and management prompt",
+        approved_by="Sumanth",
         variables=[
             PromptVariable(name="current_date", type="str", description="Current trading date"),
             PromptVariable(name="ticker", type="str", description="Stock ticker symbol"),
@@ -420,6 +425,7 @@ def create_trading_prompt_registry():
         created_by="system",
         status=PromptStatus.ACTIVE,
         description="Quantitative analysis and backtesting prompt",
+        approved_by="Sumanth",
         variables=[
             PromptVariable(name="current_date", type="str", description="Current trading date"),
             PromptVariable(name="ticker", type="str", description="Stock ticker symbol"),
@@ -450,6 +456,7 @@ def create_trading_prompt_registry():
         created_by="system",
         status=PromptStatus.ACTIVE,
         description="Portfolio management and asset allocation prompt",
+        approved_by="Sumanth",
         variables=[
             PromptVariable(name="current_date", type="str", description="Current trading date"),
             PromptVariable(name="ticker", type="str", description="Stock ticker symbol"),
