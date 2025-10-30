@@ -40,6 +40,8 @@ class TradingRole(str, Enum):
     QUANTITATIVE_ANALYST = "quantitative_analyst"
     DERIVATIVES_ANALYST = "derivatives_analyst"
     MACRO_ANALYST = "macro_analyst"
+    BULL_ANALYST = "bull_analyst"
+    BEAR_ANALYST = "bear_analyst"
 
 
 class PromptVariable(BaseModel):
@@ -87,7 +89,7 @@ class TradingPromptVersion(BaseModel):
 
     # Trading-specific fields
     trading_role: TradingRole | None = Field(default=None, description="Trading role this prompt serves")
-    tools_required: list[str] = Field(default_factory=list, description="Required tools for this prompt")
+    tools_required: list[str] | None = Field(default_factory=list, description="Required tools for this prompt")
     output_field: str | None = Field(default=None, description="Output field name for LangGraph")
 
     # Versioning information
@@ -486,56 +488,66 @@ def create_trading_prompt_registry():
     ]:
         registry.add_version(prompt)
 
+        # Bull Analyst Prompt
+        bull_analyst_prompt = TradingPromptVersion(
+            prompt_name="bull_analyst",
+            version="1.0.0",
+            system_message="""You are a Bull Analyst. Your goal is to argue for investing in the stock. Focus on growth
+             potential, competitive advantages, and positive indicators from the reports.
+             Counter the bear's arguments effectively.""",
+            prompt_type=PromptType.LANGCHAIN_CHAT,
+            trading_role=TradingRole.BULL_ANALYST,
+            tools_required=None,
+            output_field="bull_report",
+            created_by="system",
+            status=PromptStatus.ACTIVE,
+            description="Bull analyst prompt for arguing investment case",
+            approved_by="system",
+            variables=[
+                PromptVariable(name="current_date", type="str", description="Current trading date"),
+                PromptVariable(name="ticker", type="str", description="Stock ticker symbol"),
+                PromptVariable(name="tool_names", type="str", description="Available tool names"),
+                PromptVariable(name="messages", type="list", description="Message history"),
+            ],
+            metadata=PromptMetadata(
+                tags=["trading", "bull_case", "investment_analysis"],
+                use_cases=["Bull case analysis", "Investment arguments", "Positive sentiment analysis"],
+                trading_role=TradingRole.BULL_ANALYST,
+            ),
+        )
+
+        # Bear Analyst Prompt
+        bear_analyst_prompt = TradingPromptVersion(
+            prompt_name="bear_analyst",
+            version="1.0.0",
+            system_message="""You are a Bear Analyst. Your goal is to argue against investing in the stock.
+             Focus on risks, challenges, and negative indicators. Counter the bull's arguments effectively.""",
+            prompt_type=PromptType.LANGCHAIN_CHAT,
+            trading_role=TradingRole.BEAR_ANALYST,
+            tools_required=None,
+            output_field="bear_report",
+            created_by="system",
+            status=PromptStatus.ACTIVE,
+            description="Bear analyst prompt for arguing against investment",
+            approved_by="system",
+            variables=[
+                PromptVariable(name="current_date", type="str", description="Current trading date"),
+                PromptVariable(name="ticker", type="str", description="Stock ticker symbol"),
+                PromptVariable(name="tool_names", type="str", description="Available tool names"),
+                PromptVariable(name="messages", type="list", description="Message history"),
+            ],
+            metadata=PromptMetadata(
+                tags=["trading", "bear_case", "risk_analysis"],
+                use_cases=["Bear case analysis", "Risk assessment", "Negative sentiment analysis"],
+                trading_role=TradingRole.BEAR_ANALYST,
+            ),
+        )
+
+        # Add bull and bear prompts to the registry
+        registry.add_version(bull_analyst_prompt)
+        registry.add_version(bear_analyst_prompt)
+
     return registry
-
-
-# Updated function to create analyst nodes using the registry
-def create_analyst_node_from_registry(registry: TradingPromptRegistry, prompt_name: str, llm, toolkit, tools):
-    """Create an analyst node using a prompt from the registry"""
-    prompt_version = registry.get_active_version(prompt_name)
-    if not prompt_version:
-        raise ValueError(f"No active version found for prompt: {prompt_name}")
-
-    return prompt_version.create_analyst_node(llm, toolkit, tools)
-
-
-# Example usage function
-def setup_trading_analysts(quick_thinking_llm, toolkit):
-    """Setup all trading analysts using the prompt registry"""
-    registry = create_trading_prompt_registry()
-
-    # Create analyst nodes
-    market_analyst_node = create_analyst_node_from_registry(
-        registry,
-        "market_analyst",
-        quick_thinking_llm,
-        toolkit,
-        [toolkit.get_yfinance_data, toolkit.get_technical_indicators],
-    )
-
-    social_analyst_node = create_analyst_node_from_registry(
-        registry, "social_analyst", quick_thinking_llm, toolkit, [toolkit.get_social_media_sentiment]
-    )
-
-    news_analyst_node = create_analyst_node_from_registry(
-        registry,
-        "news_analyst",
-        quick_thinking_llm,
-        toolkit,
-        [toolkit.get_finnhub_news, toolkit.get_macroeconomic_news],
-    )
-
-    fundamentals_analyst_node = create_analyst_node_from_registry(
-        registry, "fundamentals_analyst", quick_thinking_llm, toolkit, [toolkit.get_fundamental_analysis]
-    )
-
-    return {
-        "registry": registry,
-        "market_analyst": market_analyst_node,
-        "social_analyst": social_analyst_node,
-        "news_analyst": news_analyst_node,
-        "fundamentals_analyst": fundamentals_analyst_node,
-    }
 
 
 print("Trading prompt registry and analyst creation functions are now available.")

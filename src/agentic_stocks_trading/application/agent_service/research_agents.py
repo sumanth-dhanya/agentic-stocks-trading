@@ -1,3 +1,4 @@
+from langchain_core.messages import HumanMessage
 from langgraph.graph import MessagesState
 from typing_extensions import TypedDict
 
@@ -43,3 +44,35 @@ class AgentState(MessagesState):
     trader_investment_plan: str  # The actionable plan from the Trader.
     risk_debate_state: RiskDebateState
     final_trade_decision: str  # The final decision from the Portfolio Manager.
+
+
+def initialize_initial_state(ticker, date) -> AgentState:
+    return AgentState(
+        messages=[HumanMessage(content=f"Analyze {ticker} for trading on {date}")],
+        company_of_interest=ticker,
+        trade_date=date,
+        investment_debate_state=InvestDebateState(
+            {
+                "history": "",
+                "current_response": "",
+                "count": 0,
+                "bull_history": "",
+                "bear_history": "",
+                "judge_decision": "",
+            }
+        ),
+        risk_debate_state=RiskDebateState(
+            {
+                "history": "",
+                "latest_speaker": "",
+                "current_risky_response": "",
+                "current_safe_response": "",
+                "current_neutral_response": "",
+                "count": 0,
+                "risky_history": "",
+                "safe_history": "",
+                "neutral_history": "",
+                "judge_decision": "",
+            }
+        ),
+    )

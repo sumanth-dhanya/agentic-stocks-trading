@@ -1,6 +1,6 @@
 from langgraph.prebuilt import ToolNode, tools_condition
 
-from agentic_stocks_trading.domain.prompts.trading_prompts import TradingPromptRegistry, create_trading_prompt_registry
+from agentic_stocks_trading.domain.prompts.trading_prompts import TradingPromptRegistry
 from src.agentic_stocks_trading.domain.tools.analyst_agent_tools import toolkit
 
 
@@ -50,9 +50,8 @@ def create_analyst_node_from_registry(registry: TradingPromptRegistry, prompt_na
 
 
 # usage func
-def setup_trading_analysts(quick_thinking_llm, toolkit):
+def setup_trading_analysts(quick_thinking_llm, toolkit, registry: TradingPromptRegistry):
     """Setup all trading analysts using the prompt registry"""
-    registry = create_trading_prompt_registry()
 
     # Create analyst nodes
     market_analyst_node = create_analyst_node_from_registry(
@@ -88,7 +87,18 @@ def setup_trading_analysts(quick_thinking_llm, toolkit):
     }
 
 
-def create_researcher_node(llm, memory, role_prompt, agent_name):
+def create_researcher_node(llm, memory, registry: TradingPromptRegistry, prompt_name: str):
+    """Create a researcher node that reads prompts from the registry"""
+    prompt_version = registry.get_active_version(prompt_name)
+    if not prompt_version:
+        raise ValueError(f"No active version found for prompt: {prompt_name}")
+
+    # Extract the role prompt from the registry
+    role_prompt = prompt_version.system_message
+
+    # Determine agent name based on prompt name
+    agent_name = "Bull Analyst" if prompt_name == "bull_analyst" else "Bear Analyst"
+
     def researcher_node(state):
         # Combine all reports and debate history for context.
         situation_summary = f"""
@@ -123,3 +133,18 @@ def create_researcher_node(llm, memory, role_prompt, agent_name):
         return {"investment_debate_state": debate_state}
 
     return researcher_node
+
+
+def create_research_manager(llm, memory):
+    def research_manager_node(state):
+        prompt = f"""As the Research Manager, your role is to critically evaluate the debate between the Bull and Bear
+         analysts and make a definitive decision.
+        Summarize the key points, then provide a clear recommendation: Buy, Sell, or Hold.
+         Develop a detailed investment plan for the trader, including your rationale and strategic actions.
+
+        Debate History:
+        {state["investment_debate_state"]["history"]}"""
+        response = llm.invoke(prompt)
+        return {"investment_plan": response.content}
+
+    return research_manager_node
