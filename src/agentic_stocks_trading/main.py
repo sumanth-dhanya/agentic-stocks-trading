@@ -10,9 +10,7 @@ from agentic_stocks_trading.application.agent_service.nodes_and_runners import (
     run_analyst,
     setup_trading_analysts,
 )
-from agentic_stocks_trading.application.agent_service.research_agents import (
-    initialize_initial_state,
-)
+from agentic_stocks_trading.application.agent_service.research_agents import initialize_initial_state
 from agentic_stocks_trading.domain.memory.financial_situation import (
     bear_memory,
     bull_memory,
