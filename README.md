@@ -27,4 +27,5 @@ _LangGraph execution flow showing agent interactions and decision points (Create
 ## Features
 
 * TODO
-- make it compatible with cli ticker runs
+- make it compatible with cli ticker run
+- increase test coverage
